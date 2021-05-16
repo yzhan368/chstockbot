@@ -1,6 +1,7 @@
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
+<<<<<<< Updated upstream
 vio_text = "举报信息"
 
 def report_command(update: Update, _: CallbackContext) -> None:
@@ -18,3 +19,28 @@ def add_dispatcher(dp):
     dp.add_handler(CommandHandler("r", report_command))
     return []
 
+=======
+def rewards(update: Update, _: CallbackContext) -> None:
+    """rewards the user message."""
+    update.message.reply_text(update.message.text)
+    print(update)
+
+def ticker_command(update: Update, _: CallbackContext) -> None:
+    update.message.chat.id == -1001478922081
+    update.message.reply_text("Welcome to the Game")
+    
+def random_command(update: Update, _: CallbackContext) -> None:
+    import random
+    print(random.randrange(1,200))
+
+def ShowMeId_command(update: Update, _: CallbackContext) -> None:
+    update.message.reply_text(update.message.chat.id)
+
+def add_dispatcher(dp):
+    dp.add_handler(CommandHandler("rewards", ticker_command))
+    dp.add_handler(CommandHandler("ShowMeId", ShowMeId_command))
+    dp.add_handler(CommandHandler("random", random_command))
+    return []
+
+
+>>>>>>> Stashed changes
