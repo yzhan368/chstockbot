@@ -47,13 +47,22 @@ if __name__ == '__main__':
     # 在这里加入功能
     # from cmdproc import admincmd
     # commands += admincmd.add_dispatcher(dispatcher)
+    from cmdproc import echo
+    from cmdproc import groupcmd
+    from cmdproc import randexp
+    from cmdproc import report
+    commands += echo.add_dispatcher(dispatcher)
+    commands += groupcmd.add_dispatcher(dispatcher)
+    commands += randexp.add_dispatcher(dispatcher)
+    commands += report.add_dispatcher(dispatcher)
+    commands += report.add_kk(dispatcher)
+    commands += report.add_kr(dispatcher)
 
     updater.bot.set_my_commands(commands)
-
     updater.start_polling()
-    print('Started...')
-    mysystemd.ready()
 
     updater.idle()
     print('Stopping...')
     print('Stopped.')
+
+    
