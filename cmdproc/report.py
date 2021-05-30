@@ -1,29 +1,13 @@
-from telegram import Update, ForceReply
+from telegram import Update, ForceReply, error
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import re
 
-AdminGroupId = -1001448969389
-KickGroupIdList = [-1001448969389, -1001358628526]
+AdminGroupId = -1001409640737
+KickGroupIdList = [-1001478922081, -1001409640737]
 
 for i in KickGroupIdList:
     print(i)
-                
-
-"""上节课的report command
-def report_command(update: Update, _: CallbackContext) -> None:
-    ReporteeMsg = update.message.reply_to_message
-    ReporterMsg = update.message
-
-    if update.message.reply_to_message != None:     #检查举报命令否为回复信息
-        if update.message.reply_to_message.text == None:    #检查被举报的信息内容是否为文本信息
-            vio_text = "非文本信息" #若被举报信息不含文本则定义举报内容为非文本信息                         
-        else:                
-            vio_text = update.message.reply_to_message.text #赋值被举报信息
-        bot_reply = "User 用户: " + update.message.from_user.full_name + " ID: " + str(update.message.from_user.id) + " Reported 举报了\nUser 用户: " + update.message.reply_to_message.from_user.full_name + " ID: " + str(update.message.reply_to_message.from_user.id) + "\nReported Content 被举报内容:\n" + vio_text
-        update.message.reply_text(bot_reply)
-    else:   #提示举报命令需要回复另一条信息
-        update.message.reply_text("To submit a report, please reply to the message in violation of our policy and type /r in text body" + "\n若举报违规行为，请回复违规信息并在回复信息中键入 /r")
-"""
+         
 
 def report_command(update: Update, _: CallbackContext) -> None:
     vio_text = "举报信息"
@@ -51,31 +35,36 @@ def kick_reportee_command(update: Update, _: CallbackContext) -> None:
     if update.message.reply_to_message == None:
         update.message.reply_text("reply to bot reporting message to kick reporter/reportee")
     else:
-        ReportList = re.findall(r'ID: \b\d+\b', update.message.reply_to_message.text) #从bot发的举报通知里找出[ID:xxxx, ID:xxxx]的举报人和被举报人ID的string list
-        if len(ReportList) != 2:
-            update.message.reply_text("failed to extract user ID to kick")
-        else:
-            ReporteeKickIdStr = re.findall(r'\b\d+\b', ReportList[1]) #把字符串"ID:"从被举报人的ID string里去掉
-            ReporteeKickId = ReporteeKickIdStr.pop() #从List中获得单项ID
-            print(type(ReporteeKickId), ReporteeKickId)
-            for i in KickGroupIdList:
-                update.message.bot.kick_chat_member(i, ReporteeKickId) #从群列表中依次踢出被举报人
-
+        MsgStr = update.message.reply_to_message.text
+        ReporteeID = MsgStr.split("\n")[1].split(" ID: ")[-1]
+        ReporterID = MsgStr.split("\n")[0].split(" ID: ")[-1].split(" 举报了")[0]
+        for i in KickGroupIdList:
+            try:
+                if (update.message.bot.kick_chat_member(i, ReporteeID)):
+                    update.message.reply_text("用户 ID: " + format(ReporteeID) + "从群 " + format(i) + "中走远了...")
+            except error.BadRequest as err:
+                ErrRly = f"""
+试图将用户：{ReporteeID} 从群: {i} 中踢出失败！原因:
+{err.message}"""
+                update.message.reply_text(ErrRly)    
 
 def kick_reporter_command(update: Update, _: CallbackContext) -> None:
     if update.message.reply_to_message == None:
         update.message.reply_text("reply to bot reporting message to kick reporter/reportee")
     else:
-        ReportList = re.findall(r'ID: \b\d+\b', update.message.reply_to_message.text) #从bot发的举报通知里找出[ID:xxxx, ID:xxxx]举报人和被举报人ID的string list
-        if len(ReportList) != 2:
-            update.message.reply_text("failed to extract user ID to kick")
-        else:
-            ReporterKickIdStr = re.findall(r'\b\d+\b', ReportList[0]) #把字符串"ID:"从举报人的ID string里去掉
-            ReporterKickId = ReporterKickIdStr.pop() #从List中获得单项ID
-            print(type(ReporterKickId), ReporterKickId)
-            for i in KickGroupIdList:
-                update.message.bot.kick_chat_member(i, ReporterKickId) #从群列表中依次踢出举报人
-           
+        MsgStr = update.message.reply_to_message.text
+        ReporteeID = MsgStr.split("\n")[1].split(" ID: ")[-1]
+        ReporterID = MsgStr.split("\n")[0].split(" ID: ")[-1].split(" 举报了")[0]
+        for i in KickGroupIdList:
+            try:
+                if (update.message.bot.kick_chat_member(i, ReporterID)):
+                    update.message.reply_text("用户 ID: " + format(ReporterID) + "从群 " + format(i) + "中走远了...")
+            except error.BadRequest as err:
+                ErrRly = f"""
+试图将用户：{ReporterID} 从群: {i} 中踢出失败！原因:
+{err.message}"""
+                update.message.reply_text(ErrRly)    
+
 def add_dispatcher(dp):
     dp.add_handler(CommandHandler("r", report_command))
     return []
@@ -87,4 +76,3 @@ def add_kk(dp):
 def add_kr(dp):
     dp.add_handler(CommandHandler("kk", kick_reporter_command))
     return []
-
