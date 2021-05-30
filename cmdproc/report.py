@@ -1,13 +1,13 @@
-from telegram import Update, ForceReply, error
+from telegram import Update, ForceReply, error, BotCommand
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 import re
 
 AdminGroupId = -1001409640737
 KickGroupIdList = [-1001478922081, -1001409640737]
 
-for i in KickGroupIdList:
-    print(i)
-         
+"""for i in KickGroupIdList:
+    print(i)"""
+        
 
 def report_command(update: Update, _: CallbackContext) -> None:
     vio_text = "举报信息"
@@ -67,12 +67,12 @@ def kick_reporter_command(update: Update, _: CallbackContext) -> None:
 
 def add_dispatcher(dp):
     dp.add_handler(CommandHandler("r", report_command))
-    return []
+    return [BotCommand('r','举报一个对话')]
 
 def add_kk(dp):
     dp.add_handler(CommandHandler("kr", kick_reportee_command))
-    return []
+    return [BotCommand('kr','🦶被举报者出群！')]
 
 def add_kr(dp):
     dp.add_handler(CommandHandler("kk", kick_reporter_command))
-    return []
+    return [BotCommand('kk', '🦶举报者出群！')]
