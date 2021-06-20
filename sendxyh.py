@@ -44,3 +44,4 @@ if __name__ == '__main__':
 # bot = Bot(token = CONFIG['Token']) 
 # bot.send_message(notifychat,message)
 # bot.send_message(receiver,f"向{notifychat}发送成功夕阳红:\n{message}")nd
+
